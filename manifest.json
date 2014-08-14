@@ -1,0 +1,36 @@
+
+{
+  "AppDescription": {
+    "en": "Control Spotify Player Remotely"
+  },
+  "AppIcon": {
+    "18x18": "images/icons/icon-18x18.png",
+    "36x18": "images/icons/icon-36x18.png",
+    "32x32": "images/icons/icon-32x32.png",
+    "64x64": "images/icons/icon-64x64.png",
+    "128x128": "images/icons/icon-128x128.png",
+    "300x300": "images/icons/icon-300x300.png"
+  },
+  "AppName": {
+    "en": "Spotify Desktop Remote"
+  },
+  "BundleIdentifier": "spotify-desktop-remote",
+  "BundleType": "Application",
+  "BundleVersion": "0.0.1",
+  "Dependencies": {
+    "api": "1.0.0"
+  },
+  "RequiredPermissions": [
+    "https://*",
+    "http://*",
+    "http://localhost:3001/*"
+  ],
+  "SupportedDeviceClasses": [
+    "Web",
+    "Desktop"
+  ],
+  "SupportedLanguages": [
+    "en"
+  ],
+  "VendorIdentifier": "io.jove"
+}
