@@ -64,10 +64,19 @@ All operations return a JSON object representing the current status of the playe
 
 ## API
 
+#### `/play`
+```sh
+curl http://localhost:3001/play
+```
+
+Play the current track.
+
 #### `/play/:track_uri/:ms?/:duration?`
 ```sh
 curl http://localhost:3001/play/spotify:track:0FutrWIUM5Mg3434asiwkp
 ```
+
+Play a specific track with a given URI.
 
 Parameters:
 > **`track_uri`**
@@ -87,9 +96,11 @@ curl http://localhost:3001/play/spotify:album:2YJFLMyzzZ2k4mhfPSiOj2
 curl http://localhost:3001/play/spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k
 ```
 
+Play a specific album or user playlist with a given URI.
+
 Parameters:
 > **`playlist_uri`**
-> A spotify playlist URI (an album, user playlist, or trackset).
+> A spotify playlist URI (an album or user playlist).
 >
 > Example: `spotify:album:2YJFLMyzzZ2k4mhfPSiOj2`
 >
@@ -109,10 +120,14 @@ Parameters:
 curl http://localhost:3001/pause
 ```
 
+Pause the player.
+
 #### `/stop`
 ```sh
 curl http://localhost:3001/stop
 ```
+
+Stop the player.
 
 #### `/volume/:volume`
 ```sh
@@ -120,6 +135,8 @@ curl http://localhost:3001/volume/1
 curl http://localhost:3001/volume/0
 curl http://localhost:3001/volume/0.5
 ```
+
+Set the player volume level.
 
 Parameters:
 > **`volume`**
@@ -130,6 +147,8 @@ Parameters:
 curl http://localhost:3001/seek/0
 curl http://localhost:3001/seek/0.5
 ```
+
+Set the playhead's position.
 
 Parameters:
 > **`amount`**
