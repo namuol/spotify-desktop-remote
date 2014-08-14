@@ -34,7 +34,7 @@ See the [HTTP API reference](#api) for more details.
 There are two parts to the app:
 
 1. The HTTP Server that forwards commands to Spotify (`server.coffee`)
-2. The Spotify Webapp (runs inside Spotify Desktop) that accepts commands from the server via Websockets (`src/main.coffee` and `index.html`)
+2. The Spotify Webapp (runs inside Spotify Desktop) that accepts commands from the server via Websockets (`main.coffee` and `index.html`)
 
 ```sh
 # OS X/Linux users:
