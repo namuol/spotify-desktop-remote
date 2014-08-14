@@ -34,7 +34,7 @@ See the [HTTP API reference](#api) for more details.
 There are two parts to the app:
 
 1. The HTTP Server that forwards commands to Spotify (`server.coffee`)
-2. The Spotify Webapp that accepts commands from the server via Websockets (`src/main.coffee` and `index.html`)
+2. The Spotify Webapp (runs inside Spotify Desktop) that accepts commands from the server via Websockets (`src/main.coffee` and `index.html`)
 
 ```sh
 # OS X/Linux users:
@@ -189,4 +189,4 @@ MIT
 
 ----
 
-[![Analytics](https://ga-beacon.appspot.com/UA-33247419-2/cod/README.md)](https://github.com/igrigorik/ga-beacon)
+[![Analytics](https://ga-beacon.appspot.com/UA-33247419-2/spotify-desktop-remote/README.md)](https://github.com/igrigorik/ga-beacon)
