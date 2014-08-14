@@ -132,7 +132,7 @@ Parameters:
 > `amount`
 > A number representing the position of the seek bar, between 0 and 1.
 
-#### `GET /sync'`
+#### `GET /sync`
 curl http://localhost:3001/sync
 
 Perform no action; simply used to retrieve the current status of the player.
