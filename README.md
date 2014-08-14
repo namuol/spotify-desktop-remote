@@ -2,10 +2,32 @@
 
 Control your Spotify Desktop app from a simple HTTP interface.
 
+```sh
+# Play a track:
+curl http://localhost:3001/play/spotify:track:0FutrWIUM5Mg3434asiwkp
+
+# Seek to the halfway mark of the song:
+curl http://localhost:3001/seek/0.5
+
+# Set the player volume:
+curl http://localhost:3001/volume/0.8
+
+# Play a playlist:
+curl http://localhost:3001/play/spotify:album:2YJFLMyzzZ2k4mhfPSiOj2
+
+# Pause the player:
+curl http://localhost:3001/pause
+
+# Stop the player:
+curl http://localhost:3001/stop
+```
+
+See the [HTTP API reference](#api) for more details.
+
 ## Requirements
 
 - [node.js](http://nodejs.org) >= 0.10
-- A premium Spotify account and to [register as a developer](https://devaccount.spotify.com/my-account/).
+- A premium Spotify account, [registered as a developer](https://devaccount.spotify.com/my-account/).
 
 ## Installation
 
@@ -47,7 +69,9 @@ curl http://localhost:3001/play/spotify:track:0FutrWIUM5Mg3434asiwkp
 curl http://localhost:3001/volume/1
 ```
 
-## Responses
+## API
+
+### Responses
 
 All operations return a JSON object representing the current status of the player:
 
@@ -61,8 +85,6 @@ All operations return a JSON object representing the current status of the playe
   "index": 0 // The position of the playing track in the currently-playing playlist.
 }
 ```
-
-## API
 
 #### `/play`
 Play the current track.
@@ -160,3 +182,11 @@ Perform no action; simply used to retrieve the current status of the player.
 ```sh
 curl http://localhost:3001/sync
 ```
+
+## License
+
+MIT
+
+----
+
+[![Analytics](https://ga-beacon.appspot.com/UA-33247419-2/cod/README.md)](https://github.com/igrigorik/ga-beacon)
