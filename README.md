@@ -64,75 +64,75 @@ All operations return a JSON object representing the current status of the playe
 
 ## API
 
-### `GET /play/:track_uri/:ms?/:duration?`
-> ```sh
-> curl http://localhost:3001/play/spotify:track:0FutrWIUM5Mg3434asiwkp
-> ```
->
-> Parameters:
-> > `track_uri`
-> > A spotify track URI.
-> > Example: `spotify:track:0FutrWIUM5Mg3434asiwkp`
->
-> > `ms` *optional*
-> > Number of milliseconds to begin playing the track at.
->
-> > `duration` *optional*
-> > Number of milliseconds to play the song for before stopping. 
+#### `GET /play/:track_uri/:ms?/:duration?`
+```sh
+curl http://localhost:3001/play/spotify:track:0FutrWIUM5Mg3434asiwkp
+```
 
-### `GET /play/:playlist_uri/:index?/:ms?/:duration?`
-> ```sh
-> curl http://localhost:3001/play/spotify:album:2YJFLMyzzZ2k4mhfPSiOj2
-> curl http://localhost:3001/play/spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k
-> ```
->
-> Parameters:
-> > `playlist_uri`
-> > A spotify playlist URI (an album, user playlist, or trackset).
-> > Example: `spotify:album:2YJFLMyzzZ2k4mhfPSiOj2`
-> > Example: `spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k`
->
-> > `index` *optional*
-> > The track number to play (starting at zero).
-> 
-> > `ms` *optional*
-> > Number of milliseconds to begin playing the track at.
->
-> > `duration` *optional*
-> > Number of milliseconds to play the song for before stopping. 
+Parameters:
+> `track_uri`
+> A spotify track URI.
+> Example: `spotify:track:0FutrWIUM5Mg3434asiwkp`
 
-### `GET /pause`
-> ```sh
-> curl http://localhost:3001/pause
-> ```
+> `ms` *optional*
+> Number of milliseconds to begin playing the track at.
 
-### `GET /stop`
-> ```sh
-> curl http://localhost:3001/stop
-> ```
+> `duration` *optional*
+> Number of milliseconds to play the song for before stopping. 
 
-### `GET /volume/:volume`
-> ```sh
-> curl http://localhost:3001/volume/1
-> curl http://localhost:3001/volume/0
-> curl http://localhost:3001/volume/0.5
-> ```
->
-> Parameters:
-> > `volume`
-> > A number representing the volume level, between 0 and 1.
+#### `GET /play/:playlist_uri/:index?/:ms?/:duration?`
+```sh
+curl http://localhost:3001/play/spotify:album:2YJFLMyzzZ2k4mhfPSiOj2
+curl http://localhost:3001/play/spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k
+```
 
-### `GET /seek/:amount`
-> ```sh
-> curl http://localhost:3001/seek/0
-> curl http://localhost:3001/seek/0.5
-> ```
->
-> Parameters:
-> > `amount`
-> > A number representing the position of the seek bar, between 0 and 1.
+Parameters:
+> `playlist_uri`
+> A spotify playlist URI (an album, user playlist, or trackset).
+> Example: `spotify:album:2YJFLMyzzZ2k4mhfPSiOj2`
+> Example: `spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k`
 
-### `GET /sync'`
-> curl http://localhost:3001/sync
->
-> Perform no action; simply used to retrieve the current status of the player.
+> `index` *optional*
+> The track number to play (starting at zero).
+
+> `ms` *optional*
+> Number of milliseconds to begin playing the track at.
+
+> `duration` *optional*
+> Number of milliseconds to play the song for before stopping. 
+
+#### `GET /pause`
+```sh
+curl http://localhost:3001/pause
+```
+
+#### `GET /stop`
+```sh
+curl http://localhost:3001/stop
+```
+
+#### `GET /volume/:volume`
+```sh
+curl http://localhost:3001/volume/1
+curl http://localhost:3001/volume/0
+curl http://localhost:3001/volume/0.5
+```
+
+Parameters:
+> `volume`
+> A number representing the volume level, between 0 and 1.
+
+#### `GET /seek/:amount`
+```sh
+curl http://localhost:3001/seek/0
+curl http://localhost:3001/seek/0.5
+```
+
+Parameters:
+> `amount`
+> A number representing the position of the seek bar, between 0 and 1.
+
+#### `GET /sync'`
+curl http://localhost:3001/sync
+
+Perform no action; simply used to retrieve the current status of the player.
