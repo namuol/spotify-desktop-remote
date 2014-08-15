@@ -1,4 +1,4 @@
-require ['$api/models', '$api/search', '$api/toplists'], (models, search, toplists) ->
+require ['$api/models'], (models) ->
   Number::clamp = (min, max) ->
     Math.min Math.max(this, min), max
 
@@ -22,10 +22,12 @@ require ['$api/models', '$api/search', '$api/toplists'], (models, search, toplis
   socket = io.connect 'http://localhost:3001'
 
   socket.on 'connect', ->
-    $('h1').addClass('connected').removeClass('disconnected').html 'connected'
+    status = document.getElementById 'status'
+    status.className = status.innerHTML = 'connected'
 
   socket.on 'disconnect', ->
-    $('h1').addClass('disconnected').removeClass('connected').html 'disconnected'
+    status = document.getElementById 'status'
+    status.className = status.innerHTML = 'disconnected'
   
   getStatus = (cb) ->
     models.player.load('volume', 'playing', 'position', 'duration', 'track', 'index')
@@ -102,6 +104,10 @@ require ['$api/models', '$api/search', '$api/toplists'], (models, search, toplis
       console.error err
       cb 'Failed to play ' + uri
 
+  socket.on 'sync', (cb) ->
+    console.log 'sync'
+    getStatus cb
+
   socket.on 'seek', (params, cb) ->
     console.log 'seek', params
     {amount} = params
@@ -115,7 +121,3 @@ require ['$api/models', '$api/search', '$api/toplists'], (models, search, toplis
     , (err) ->
       console.error err
       cb 'Failed to seek to ' + amount
-
-  socket.on 'sync', (cb) ->
-    console.log 'sync'
-    getStatus cb

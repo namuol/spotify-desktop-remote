@@ -1,12 +1,16 @@
 {
   "name": "spotify-desktop-remote",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Control your Spotify Desktop app with a simple HTTP interface",
   "main": "server.coffee",
   "author": {
     "name": "Louis Acresti",
     "email": "louis.acresti@gmail.com",
     "url": "https://namuol.github.io"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/namuol/spotify-desktop-remote.git"
   },
   "license": "MIT",
   "dependencies": {

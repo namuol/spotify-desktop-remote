@@ -62,7 +62,6 @@ app.get '/sync', (req, res, next) ->
     res.send data
 
 app.get '/seek/:amount', (req, res, next) ->
-  console.log 'seek'
   main_socket.emit 'seek', getParams(req), (err, data={}) ->
     return res.send 500, err  if err
     res.send data    
