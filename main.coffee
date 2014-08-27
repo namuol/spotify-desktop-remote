@@ -1,4 +1,6 @@
 require ['$api/models'], (models) ->
+  window.models = models
+
   Number::clamp = (min, max) ->
     Math.min Math.max(this, min), max
 
@@ -13,12 +15,6 @@ require ['$api/models'], (models) ->
 
   available_songs = {}
   
-  playlist = null
-  
-  models.Playlist.createTemporary('SPOTIFY_REMOTE_TEMP').done (_playlist) ->
-    playlist = _playlist
-    playlist.load('tracks')
-
   socket = io.connect 'http://localhost:3001'
 
   socket.on 'connect', ->
@@ -48,9 +44,8 @@ require ['$api/models'], (models) ->
           index: player.index
         }
 
-  socket.on 'volume', (params, cb) ->
-    console.log 'volume', params
-    {volume} = params
+  socket.on 'volume', (volume, cb) ->
+    console.log 'volume', volume
     models.player.load('volume').then (player) ->
       volume ?= player.volume
       models.player.setVolume(parseFloat(volume).clamp(0,1))
@@ -84,6 +79,22 @@ require ['$api/models'], (models) ->
       console.error err
       cb 'Failed to play.'
 
+  socket.on 'nextTrack', (cb) ->
+    console.log 'nextTrack'
+    models.player.skipToNextTrack().then ->
+      getStatus cb
+    , (err) ->
+      console.error err
+      cb 'Failed to skip to next track.'
+
+  socket.on 'prevTrack', (cb) ->
+    console.log 'prevTrack'
+    models.player.skipToPrevTrack().then ->
+      getStatus cb
+    , (err) ->
+      console.error err
+      cb 'Failed to skip to prev track.'
+
   socket.on 'playContext', (params, cb) ->
     console.log 'playContext', params
     {uri, index, ms, duration} = params
@@ -108,9 +119,8 @@ require ['$api/models'], (models) ->
     console.log 'sync'
     getStatus cb
 
-  socket.on 'seek', (params, cb) ->
-    console.log 'seek', params
-    {amount} = params
+  socket.on 'seek', (amount, cb) ->
+    console.log 'seek', amount
     models.player.load('volume', 'playing', 'position', 'duration', 'track').then (player) ->
       player.seek(player.duration * parseFloat(amount))
     .then (player) ->
@@ -121,3 +131,6 @@ require ['$api/models'], (models) ->
     , (err) ->
       console.error err
       cb 'Failed to seek to ' + amount
+
+  models.player.addEventListener 'change', (event) ->
+    socket.emit 'player.change', event.data
