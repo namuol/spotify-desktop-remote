@@ -16,7 +16,7 @@
   },
   "BundleIdentifier": "spotify-desktop-remote",
   "BundleType": "Application",
-  "BundleVersion": "0.2.0",
+  "BundleVersion": "0.2.2",
   "Dependencies": {
     "api": "1.0.0"
   },
