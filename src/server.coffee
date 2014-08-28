@@ -11,7 +11,7 @@ allowCrossDomain = (req, res, next) ->
   return
   
 app.use allowCrossDomain
-app.use require('serve-static')(__dirname)
+app.use require('serve-static')(process.cwd())
 app.use (req, res, next) ->
   return res.status(400).send 'Not connected to the player! Ensure you are <a href="spotify:app:spotify-desktop-remote">running the app</a>.'  if not spotify_socket
   next()

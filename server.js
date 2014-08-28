@@ -19,7 +19,7 @@
 
   app.use(allowCrossDomain);
 
-  app.use(require('serve-static')(__dirname));
+  app.use(require('serve-static')(process.cwd()));
 
   app.use(function(req, res, next) {
     if (!spotify_socket) {
