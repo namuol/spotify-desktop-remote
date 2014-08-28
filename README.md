@@ -164,8 +164,8 @@ Then somewhere after that you can connect:
 ```js
 var socket = io.connect();
 socket.on('player.change', function (playerStatus) {
-
-  });
+  console.log('The current player status is', playerStatus);
+});
 ```
 
 <a name='player.change'></a>
