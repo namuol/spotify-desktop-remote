@@ -217,7 +217,7 @@ socket.emit('play');
 ```
 
 #### `/play/:track_uri/:ms?/:duration?`
-#### `socket.emit('play', {uri[, ms, duration]})
+#### `socket.emit('play', {uri[, ms, duration]})`
 Play a specific track with a given URI.
 
 ```bash
@@ -261,7 +261,7 @@ Parameters:
 > Number of milliseconds to play the song for before stopping. 
 
 #### `/play/:playlist_uri/:index?/:ms?/:duration?`
-#### `socket.emit('play', {uri[, index, ms, duration]})
+#### `socket.emit('play', {uri[, index, ms, duration]})`
 Play a specific album or user playlist with a given URI.
 
 ```bash
