@@ -1,8 +1,8 @@
 {
   "name": "spotify-desktop-remote",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Control your Spotify Desktop app with a simple HTTP interface or Socket.io",
-  "main": "server.coffee",
+  "main": "server.js",
   "author": {
     "name": "Louis Acresti",
     "email": "louis.acresti@gmail.com",
