@@ -18,31 +18,13 @@ require ['$api/models'], (models) ->
   socket = io.connect 'http://localhost:3001'
 
   socket.on 'connect', ->
+    socket.emit '__player_connected__'
     status = document.getElementById 'status'
     status.className = status.innerHTML = 'connected'
 
   socket.on 'disconnect', ->
     status = document.getElementById 'status'
     status.className = status.innerHTML = 'disconnected'
-  
-  getStatus = (cb) ->
-    models.player.load('volume', 'playing', 'position', 'duration', 'track', 'index')
-      .fail (err) ->
-        console.error err
-        cb 'Failed to retrieve sync info.'
-      .done (player) ->
-        # HACK: This is the only way to ensure the "position" attribute is up-to-date:
-        if player.playing
-          player.play()
-
-        cb null, {
-          volume: player.volume
-          playing: player.playing
-          duration: player.duration
-          position: player.position
-          track: player.track?.uri.replace 'spotify:track:', ''
-          index: player.index
-        }
 
   socket.on 'volume', (volume, cb) ->
     console.log 'volume', volume
@@ -50,14 +32,14 @@ require ['$api/models'], (models) ->
       volume ?= player.volume
       models.player.setVolume(parseFloat(volume).clamp(0,1))
     .then (player) ->
-      getStatus cb
+      cb null, currentStatus
     , (err) ->
       cb err
 
   socket.on 'stop', (cb) ->
     console.log 'stop'
     models.player.stop().then ->
-      getStatus cb
+      cb null, currentStatus
     , (err) ->
       console.error err
       cb 'Failed to stop.'
@@ -65,7 +47,7 @@ require ['$api/models'], (models) ->
   socket.on 'pause', (cb) ->
     console.log 'pause'
     models.player.pause().then ->
-      getStatus cb
+      cb null, currentStatus
     , (err) ->
       console.error err
       cb 'Failed to pause.'
@@ -74,7 +56,7 @@ require ['$api/models'], (models) ->
     console.log 'play'
     models.player.pause()
     models.player.play().then ->
-      getStatus cb
+      cb null, currentStatus
     , (err) ->
       console.error err
       cb 'Failed to play.'
@@ -82,7 +64,7 @@ require ['$api/models'], (models) ->
   socket.on 'nextTrack', (cb) ->
     console.log 'nextTrack'
     models.player.skipToNextTrack().then ->
-      getStatus cb
+      cb null, currentStatus
     , (err) ->
       console.error err
       cb 'Failed to skip to next track.'
@@ -90,7 +72,7 @@ require ['$api/models'], (models) ->
   socket.on 'prevTrack', (cb) ->
     console.log 'prevTrack'
     models.player.skipToPrevTrack().then ->
-      getStatus cb
+      cb null, currentStatus
     , (err) ->
       console.error err
       cb 'Failed to skip to prev track.'
@@ -100,7 +82,7 @@ require ['$api/models'], (models) ->
     {uri, index, ms, duration} = params
     models.player.pause()
     models.player.playContext(models.Context.fromURI(uri), index, parseFloat(ms), parseFloat(duration)).then ->
-      getStatus cb
+      cb null, currentStatus
     , (err) ->
       console.error err
       cb 'Failed to play ' + uri
@@ -110,27 +92,26 @@ require ['$api/models'], (models) ->
     {uri, ms, duration} = params
     models.player.pause()
     models.player.playTrack(models.Track.fromURI(uri), parseFloat(ms), parseFloat(duration)).then ->
-      getStatus cb
+      cb null, currentStatus
     , (err) ->
       console.error err
       cb 'Failed to play ' + uri
 
   socket.on 'sync', (cb) ->
     console.log 'sync'
-    getStatus cb
+    cb null, currentStatus
 
   socket.on 'seek', (amount, cb) ->
     console.log 'seek', amount
     models.player.load('volume', 'playing', 'position', 'duration', 'track').then (player) ->
       player.seek(player.duration * parseFloat(amount))
     .then (player) ->
-      cb null, {
-        duration: player.duration
-        position: player.position        
-      }
+      cb null, currentStatus
     , (err) ->
       console.error err
       cb 'Failed to seek to ' + amount
 
+  currentStatus = null
   models.player.addEventListener 'change', (event) ->
-    socket.emit 'player.change', event.data
+    currentStatus = event.data
+    socket.emit 'player.change', currentStatus

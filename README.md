@@ -1,8 +1,8 @@
 # Spotify Desktop Remote
 
-Control your Spotify Desktop app from a simple HTTP interface.
+Control your Spotify Desktop app from a simple HTTP interface or with [Socket.IO](http://socket.io).
 
-```sh
+```bash
 # Play a track:
 curl http://localhost:3001/play/spotify:track:0FutrWIUM5Mg3434asiwkp
 
@@ -22,7 +22,32 @@ curl http://localhost:3001/pause
 curl http://localhost:3001/stop
 ```
 
-See the [HTTP API reference](#api) for more details.
+```js
+// Keep everything in sync:
+socket.on('player.change', function (playerStatus) {
+  console.log('The current player status is', playerStatus);
+});
+
+// Play a track:
+socket.emit('play', {uri: 'spotify:track:0FutrWIUM5Mg3434asiwkp'});
+
+// Seek to the halfway mark of the song:
+socket.emit('seek', 0.5);
+
+// Set the player volume:
+socket.emit('volume', 0.8);
+
+// Play a playlist:
+socket.emit('play', {uri: 'spotify:album:2YJFLMyzzZ2k4mhfPSiOj2'});
+
+// Pause the player:
+socket.emit('pause');
+
+// Stop the player:
+socket.emit('stop');
+```
+
+See the [API reference](#api) for more details.
 
 ## Requirements
 
@@ -33,10 +58,10 @@ See the [HTTP API reference](#api) for more details.
 
 There are two parts to the app:
 
-1. The HTTP Server that forwards commands to Spotify (`server.coffee`)
-2. The Spotify Webapp (runs inside Spotify Desktop) that accepts commands from the server via Websockets (`main.coffee` and `index.html`)
+1. The HTTP Server that forwards commands to Spotify (`src/server.coffee`)
+2. The Spotify Webapp (runs inside Spotify Desktop) that accepts commands from the server via Websockets (`src/main.coffee` and `index.html`)
 
-```sh
+```bash
 # OS X/Linux users:
 cd ~/Spotify
 
@@ -46,17 +71,11 @@ cd ~/Spotify
 git clone https://github.com/namuol/spotify-desktop-remote.git
 cd spotify-desktop-remote
 
-# Install global dependencies:
-npm install -g coffee-script grunt-cli
-
-# Install local dependencies:
-npm install
-
-# Build project files and start the server on port 3001:
-grunt
+# Start the server on port 3001:
+npm start
 
 # Or run it on a different port:
-# PORT=3002 grunt
+# PORT=3002 npm start
 
 # Finally, run spotify and open the app:
 spotify -uri spotify:app:spotify-desktop-remote
@@ -73,35 +92,164 @@ curl http://localhost:3001/volume/1
 
 ### Responses
 
-All operations return a JSON object representing the current status of the player:
+All GET operations and the [`player.change`](#player.change) socket event return a JSON object representing the current status of the player:
 
 ```js
 {
-  "volume": 1, // Current volume level (between 0 and 1)
-  "playing": false, // Whether or not the player is playing.
-  "duration": 228013, // The duration of the current track in milliseconds.
-  "position": 27268, // The current position of the playhead in milliseconds.
-  "track": "6GJOjvlrF2TKxq19Ey2H66", // The current track ID (spotify:track:<id>)
-  "index": 0 // The position of the playing track in the currently-playing playlist.
+  loading: false,
+  playing: true,
+  position: 19450,
+  duration: 212400,
+  index: 0,
+  repeat: false,
+  shuffle: false,
+  volume: 0.849988579750061,
+  context: null,
+  contexts: [{
+    index: 0,
+    descriptor: {
+      type: "set"
+    }
+  }],
+  track: {
+    artists: [{
+      name: "Rick Astley",
+      uri: "spotify:artist:0gxyHStUsqpMadRV0Di1Qt"
+    }],
+    disc: 1,
+    duration: 212000,
+    image: "spotify:image:938dfdd57d4fe8a864f6148ffb9676395d012720",
+    images: [
+      [
+        64,
+        "spotify:image:9b87c26f500947d28838ebb2e33c120f6b9a6b1b"
+      ],
+      [
+        300,
+        "spotify:image:938dfdd57d4fe8a864f6148ffb9676395d012720"
+      ],
+      [
+        600,
+        "spotify:image:d6e92c8891f16c1126c6d58f47da81873a17e993"
+      ]
+    ],
+    name: "Never Gonna Give You Up",
+    number: 1,
+    playable: true,
+    popularity: 65,
+    starred: false,
+    explicit: false,
+    availability: "premium",
+    album: {
+      uri: "spotify:album:3vGtqTr5he9uQfusQWJ0oC"
+    },
+    local: false,
+    advertisement: false,
+    placeholder: false,
+    uri: "spotify:track:0FutrWIUM5Mg3434asiwkp"
+  }
 }
 ```
 
-#### `/play`
-Play the current track.
+### Socket.io
 
-```sh
-curl http://localhost:3001/play
+In order to use socket.io, include the following in your `<head>`:
+
+```html
+<script type='application/javascript' src="http://localhost:3001/socket.io/socket.io.js"></script>
 ```
 
-#### `/play/:track_uri/:ms?/:duration?`
-Play a specific track with a given URI.
+Then somewhere after that you can connect:
 
-```sh
-curl http://localhost:3001/play/spotify:track:0FutrWIUM5Mg3434asiwkp
+```js
+var socket = io.connect();
+socket.on('player.change', function (playerStatus) {
+
+  });
+```
+
+<a name='player.change'></a>
+#### `socket.on('player.change', callback(playerStatus))`
+*socket only*
+
+Subscribe to this event to be notified whenever anything about the player changes.
+
+To poll for the status (with sockets or `GET`), see [`sync`](#sync).
+
+```js
+socket.on('player.change', function (playerStatus) {
+  console.log('The current volume level is', playerStatus.volume)
+});
 ```
 
 Parameters:
-> **`track_uri`**
+> **`callback(playerStatus)`** *socket only*
+> A callback function that accepts a single argument as the [player's current status](#responses).
+
+#### `/sync`
+#### `socket.emit('sync', callback(playerStatus))`
+Perform no action; simply used to retrieve the current status of the player.
+
+```bash
+curl http://localhost:3001/sync
+```
+
+```js
+socket.emit('sync', function (playerStatus) {
+  console.log('The current volume level is', playerStatus.volume);
+});
+```
+
+Parameters:
+> **`callback(playerStatus)`** *socket only*
+> A callback function that accepts a single argument as the [player's current status](#responses).
+
+#### `/play`
+#### `socket.emit('play')`
+Play the current track.
+
+```bash
+curl http://localhost:3001/play
+```
+
+```js
+socket.emit('play');
+```
+
+#### `/play/:track_uri/:ms?/:duration?`
+#### `socket.emit('play', {uri[, ms, duration]})
+Play a specific track with a given URI.
+
+```bash
+curl http://localhost:3001/play/spotify:track:0FutrWIUM5Mg3434asiwkp
+
+# Play the first 30 seconds:
+curl http://localhost:3001/play/spotify:track:0FutrWIUM5Mg3434asiwkp/0/30000
+
+# Play the first 30 seconds starting one minute into the song:
+curl http://localhost:3001/play/spotify:track:0FutrWIUM5Mg3434asiwkp/60000/30000
+```
+
+```js
+socket.emit('play', {uri: 'spotify:track:0FutrWIUM5Mg3434asiwkp'});
+
+// Play the first 30 seconds:
+socket.emit('play', {
+  uri: 'spotify:track:0FutrWIUM5Mg3434asiwkp',
+  ms: 0,
+  duration: 30000
+});
+
+// Play the first 30 seconds starting one minute into the song:
+socket.emit('play', {
+  uri: 'spotify:track:0FutrWIUM5Mg3434asiwkp',
+  ms: 60000,
+  duration: 30000
+});
+```
+
+Parameters:
+> **`track_uri`** / **`uri`**
 > A spotify track URI.
 >
 > Example: `spotify:track:0FutrWIUM5Mg3434asiwkp`
@@ -113,15 +261,51 @@ Parameters:
 > Number of milliseconds to play the song for before stopping. 
 
 #### `/play/:playlist_uri/:index?/:ms?/:duration?`
+#### `socket.emit('play', {uri[, index, ms, duration]})
 Play a specific album or user playlist with a given URI.
 
-```sh
+```bash
 curl http://localhost:3001/play/spotify:album:2YJFLMyzzZ2k4mhfPSiOj2
 curl http://localhost:3001/play/spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k
+
+# Start at the third track in the playlist:
+curl http://localhost:3001/play/spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k/3
+
+# Start a minute into the third track in the playlist:
+curl http://localhost:3001/play/spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k/3/60000
+
+# Start a minute into the third track in the playlist and play the first 30 seconds:
+curl http://localhost:3001/play/spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k/3/60000/30000
+```
+
+```js
+socket.emit('play', {uri: 'spotify:album:2YJFLMyzzZ2k4mhfPSiOj2'});
+socket.emit('play', {uri: 'spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8'});
+
+// Start at the third track in the playlist:
+socket.emit('play', {
+  uri: 'spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k',
+  index: 3
+});
+
+// Start a minute into the third track in the playlist:
+socket.emit('play', {
+  uri: 'spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k',
+  index: 3,
+  ms: 60000
+});
+
+// Start a minute into the third track in the playlist and play the first 30 seconds:
+socket.emit('play', {
+  uri: 'spotify:user:spotify:playlist:4BKT5olNFqLB1FAa8OtC8k',
+  index: 3,
+  ms: 60000,
+  duration: 30000
+});
 ```
 
 Parameters:
-> **`playlist_uri`**
+> **`playlist_uri`** / **`uri`**
 > A spotify playlist URI (an album or user playlist).
 >
 > Example: `spotify:album:2YJFLMyzzZ2k4mhfPSiOj2`
@@ -138,26 +322,43 @@ Parameters:
 > Number of milliseconds to play the song for before stopping. 
 
 #### `/pause`
+#### `socket.emit('pause')`
 Pause the player.
 
-```sh
+```bash
 curl http://localhost:3001/pause
 ```
 
+```js
+socket.emit('pause');
+```
+
 #### `/stop`
+#### `socket.emit('stop')`
 Stop the player.
 
-```sh
+```bash
 curl http://localhost:3001/stop
 ```
 
+```js
+socket.emit('pause');
+```
+
 #### `/volume/:volume`
+#### `socket.emit('volume', volume)`
 Set the player volume level.
 
-```sh
+```bash
 curl http://localhost:3001/volume/1
 curl http://localhost:3001/volume/0
 curl http://localhost:3001/volume/0.5
+```
+
+```js
+socket.emit('volume', 1);
+socket.emit('volume', 0);
+socket.emit('volume', 0.5);
 ```
 
 Parameters:
@@ -165,23 +366,23 @@ Parameters:
 > A number representing the volume level, between 0 and 1.
 
 #### `/seek/:amount`
+#### `socket.emit('seek', amount)`
 Set the playhead's position.
 
-```sh
+```bash
 curl http://localhost:3001/seek/0
 curl http://localhost:3001/seek/0.5
 ```
 
+```js
+socket.emit('seek', 0);
+socket.emit('seek', 0.5);
+```
+
+
 Parameters:
 > **`amount`**
 > A number representing the position of the seek bar, between 0 and 1.
-
-#### `/sync`
-Perform no action; simply used to retrieve the current status of the player.
-
-```sh
-curl http://localhost:3001/sync
-```
 
 ## License
 

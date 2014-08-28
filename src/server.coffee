@@ -12,6 +12,9 @@ allowCrossDomain = (req, res, next) ->
   
 app.use allowCrossDomain
 app.use require('serve-static')(__dirname)
+app.use (req, res, next) ->
+  return res.status(400).send 'Not connected to the player! Ensure you are <a href="spotify:app:spotify-desktop-remote">running the app</a>.'  if not spotify_socket
+  next()
 
 getParams = (req) ->
   result = {}
@@ -19,56 +22,60 @@ getParams = (req) ->
     result[k] = v
   return result
 
-io.on 'connection', (spotify_socket) ->
-  spotify_socket.on 'player.change', (data) ->
-    console.log 'CHANGE!'
-    spotify_socket.broadcast.emit 'player.change', data
-  
-  io.on 'connection', (socket) ->
-    socket.on 'pause', -> spotify_socket.emit 'pause'
-    socket.on 'stop', -> spotify_socket.emit 'stop'
-    socket.on 'nextTrack', -> spotify_socket.emit 'nextTrack'
-    socket.on 'prevTrack', -> spotify_socket.emit 'prevTrack'
+spotify_socket = null
 
-    socket.on 'volume', (level) -> spotify_socket.emit 'volume', level
-    socket.on 'seek', (amount) -> spotify_socket.emit 'seek', amount
+io.on 'connection', (socket) ->
+  socket.on '__player_connected__', ->
+    spotify_socket = socket
+    spotify_socket.on 'disconnect', ->
+      spotify_socket = null
+    spotify_socket.on 'player.change', (data) ->
+      spotify_socket.broadcast.emit 'player.change', data
     
-    socket.on 'play', (params) ->
-      if /^spotify:track:[^:]+$/.test params?.uri
-        spotify_socket.emit 'playTrack', params
-      else if /^spotify:(user:[^:]+:playlist|album):[^:]+$/.test params?.uri
-        spotify_socket.emit 'playContext', params
-      else
-        spotify_socket.emit 'play'
+  socket.on 'pause', -> spotify_socket?.emit 'pause'
+  socket.on 'stop', -> spotify_socket?.emit 'stop'
+  socket.on 'nextTrack', -> spotify_socket?.emit 'nextTrack'
+  socket.on 'prevTrack', -> spotify_socket?.emit 'prevTrack'
+
+  socket.on 'volume', (level) -> spotify_socket?.emit 'volume', level
+  socket.on 'seek', (amount) -> spotify_socket?.emit 'seek', amount
+  
+  socket.on 'play', (params) ->
+    if /^spotify:track:[^:]+$/.test params?.uri
+      spotify_socket.emit 'playTrack', params
+    else if /^spotify:(user:[^:]+:playlist|album):[^:]+$/.test params?.uri
+      spotify_socket.emit 'playContext', params
+    else
+      spotify_socket.emit 'play'
 
   app.get '/volume/:volume', (req, res, next) ->
     spotify_socket.emit 'volume', getParams(req).volume, (err, data={}) ->
-      return res.send 500, err  if err
+      return res.status(500).send err  if err
       res.send data
 
   app.get '/stop', (req, res, next) ->
     spotify_socket.emit 'stop', (err, data={}) ->
-      return res.send 500, err  if err
+      return res.status(500).send err  if err
       res.send data
 
   app.get '/pause', (req, res, next) ->
     spotify_socket.emit 'pause', (err, data={}) ->
-      return res.send 500, err  if err
+      return res.status(500).send err  if err
       res.send data
 
   app.get '/play', (req, res, next) ->
     spotify_socket.emit 'play', (err, data={}) ->
-      return res.send 500, err  if err
+      return res.status(500).send err  if err
       res.send data
 
   app.get '/nextTrack', (req, res, next) ->
     spotify_socket.emit 'nextTrack', (err, data={}) ->
-      return res.send 500, err  if err
+      return res.status(500).send err  if err
       res.send data
 
   app.get '/prevTrack', (req, res, next) ->
     spotify_socket.emit 'prevTrack', (err, data={}) ->
-      return res.send 500, err  if err
+      return res.status(500).send err  if err
       res.send data
 
   app.get /^\/play\/(spotify:track:[^:]+)(\/([0-9]+))?(\/([0-9]+))?/, (req, res, next) ->
@@ -78,7 +85,7 @@ io.on 'connection', (spotify_socket) ->
       duration: req.params[4]
 
     spotify_socket.emit 'playTrack', params, (err, data={}) ->
-      return res.send 500, err  if err
+      return res.status(500).send err  if err
       res.send data
 
   app.get /^\/play\/(spotify:(user:[^:]+:playlist|album):[^:]+)(\/([0-9]+))?(\/([0-9]+))?(\/([0-9]+))?/, (req, res, next) ->
@@ -88,17 +95,17 @@ io.on 'connection', (spotify_socket) ->
       ms: req.params[6]
       duration: req.params[8]
     spotify_socket.emit 'playContext', params, (err, data={}) ->
-      return res.send 500, err  if err
+      return res.status(500).send err  if err
       res.send data
 
   app.get '/sync', (req, res, next) ->
     spotify_socket.emit 'sync', (err, data={}) ->
-      return res.send 500, err  if err
+      return res.status(500).send err  if err
       res.send data
 
   app.get '/seek/:amount', (req, res, next) ->
     spotify_socket.emit 'seek', getParams(req).amount, (err, data={}) ->
-      return res.send 500, err  if err
+      return res.status(500).send err  if err
       res.send data
 
 server.listen process.env.PORT ? 3001

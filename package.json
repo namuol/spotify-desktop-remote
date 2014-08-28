@@ -1,12 +1,16 @@
 {
   "name": "spotify-desktop-remote",
-  "version": "0.1.0",
-  "description": "Control your Spotify Desktop app with a simple HTTP interface",
+  "version": "0.2.0",
+  "description": "Control your Spotify Desktop app with a simple HTTP interface or Socket.io",
   "main": "server.coffee",
   "author": {
     "name": "Louis Acresti",
     "email": "louis.acresti@gmail.com",
     "url": "https://namuol.github.io"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "prepublish": "grunt"
   },
   "repository": {
     "type": "git",
@@ -15,12 +19,14 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.8.3",
+    "socket.io": "^1.0.6",
+    "serve-static": "^1.5.1"
+  },
+  "devDependencies": {
     "grunt": "~0.4.2",
     "grunt-contrib-coffee": "^0.11.0",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-express-server": "~0.4.11",
-    "socket.io": "^1.0.6",
-    "serve-static": "^1.5.1",
     "coffee-script": "^1.7.1"
   }
 }

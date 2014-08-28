@@ -4,12 +4,12 @@ module.exports = (grunt) ->
       options:
         livereload: true
       express:
-        files: 'server.coffee'
+        files: 'src/server.coffee'
         tasks: ['express:dev']
         options:
           spawn: false
       coffee:
-        files: ['main.coffee']
+        files: ['src/main.coffee']
         tasks: ['coffee']
       html:
         files: '*.html'
@@ -21,15 +21,17 @@ module.exports = (grunt) ->
         options:
           port: process.env.PORT ? 3001
           opts: ['node_modules/coffee-script/bin/coffee']
-          script: 'server.coffee'
+          script: 'src/server.coffee'
 
     coffee:
       build:
         files:
-          'main.js': 'main.coffee'
+          'main.js': 'src/main.coffee'
+          'server.js': 'src/server.coffee'
 
   grunt.loadNpmTasks "grunt-contrib-coffee"
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks "grunt-express-server"
 
-  grunt.registerTask 'default', ['coffee', 'express:dev', 'watch']
+  grunt.registerTask 'default', ['coffee']
+  grunt.registerTask 'dev', ['coffee', 'express:dev', 'watch']
