@@ -70,6 +70,9 @@
     socket.on('seek', function(amount) {
       return spotify_socket != null ? spotify_socket.emit('seek', amount) : void 0;
     });
+    socket.on('getPlaylist', function(uri, cb) {
+      return spotify_socket != null ? spotify_socket.emit('getPlaylist', uri, cb) : void 0;
+    });
     socket.on('play', function(params) {
       if (/^spotify:track:[^:]+$/.test(params != null ? params.uri : void 0)) {
         return spotify_socket.emit('playTrack', params);

@@ -39,6 +39,7 @@ io.on 'connection', (socket) ->
 
   socket.on 'volume', (level) -> spotify_socket?.emit 'volume', level
   socket.on 'seek', (amount) -> spotify_socket?.emit 'seek', amount
+  socket.on 'getPlaylist', (uri, cb) -> spotify_socket?.emit 'getPlaylist', uri, cb
   
   socket.on 'play', (params) ->
     if /^spotify:track:[^:]+$/.test params?.uri

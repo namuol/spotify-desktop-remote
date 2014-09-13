@@ -32,84 +32,102 @@ require ['$api/models'], (models) ->
       volume ?= player.volume
       models.player.setVolume(parseFloat(volume).clamp(0,1))
     .then (player) ->
-      cb null, currentStatus
+      cb? null, currentStatus
     , (err) ->
-      cb err
+      cb? err
 
   socket.on 'stop', (cb) ->
     console.log 'stop'
     models.player.stop().then ->
-      cb null, currentStatus
+      cb? null, currentStatus
     , (err) ->
       console.error err
-      cb 'Failed to stop.'
+      cb? 'Failed to stop.'
 
   socket.on 'pause', (cb) ->
     console.log 'pause'
     models.player.pause().then ->
-      cb null, currentStatus
+      cb? null, currentStatus
     , (err) ->
       console.error err
-      cb 'Failed to pause.'
+      cb? 'Failed to pause.'
 
   socket.on 'play', (cb) ->
     console.log 'play'
     models.player.pause()
     models.player.play().then ->
-      cb null, currentStatus
+      cb? null, currentStatus
     , (err) ->
       console.error err
-      cb 'Failed to play.'
+      cb? 'Failed to play.'
 
   socket.on 'nextTrack', (cb) ->
     console.log 'nextTrack'
     models.player.skipToNextTrack().then ->
-      cb null, currentStatus
+      cb? null, currentStatus
     , (err) ->
       console.error err
-      cb 'Failed to skip to next track.'
+      cb? 'Failed to skip to next track.'
 
   socket.on 'prevTrack', (cb) ->
     console.log 'prevTrack'
     models.player.skipToPrevTrack().then ->
-      cb null, currentStatus
+      cb? null, currentStatus
     , (err) ->
       console.error err
-      cb 'Failed to skip to prev track.'
+      cb? 'Failed to skip to prev track.'
 
   socket.on 'playContext', (params, cb) ->
     console.log 'playContext', params
     {uri, index, ms, duration} = params
     models.player.pause()
     models.player.playContext(models.Context.fromURI(uri), index, parseFloat(ms), parseFloat(duration)).then ->
-      cb null, currentStatus
+      cb? null, currentStatus
     , (err) ->
       console.error err
-      cb 'Failed to play ' + uri
+      cb? 'Failed to play ' + uri
 
   socket.on 'playTrack', (params, cb) ->
     console.log 'playTrack', params
     {uri, ms, duration} = params
     models.player.pause()
     models.player.playTrack(models.Track.fromURI(uri), parseFloat(ms), parseFloat(duration)).then ->
-      cb null, currentStatus
+      cb? null, currentStatus
     , (err) ->
       console.error err
-      cb 'Failed to play ' + uri
+      cb? 'Failed to play ' + uri
 
   socket.on 'sync', (cb) ->
     console.log 'sync'
-    cb null, currentStatus
+    cb? null, currentStatus
 
   socket.on 'seek', (amount, cb) ->
     console.log 'seek', amount
     models.player.load('volume', 'playing', 'position', 'duration', 'track').then (player) ->
       player.seek(player.duration * parseFloat(amount))
     .then (player) ->
-      cb null, currentStatus
+      cb? null, currentStatus
     , (err) ->
       console.error err
-      cb 'Failed to seek to ' + amount
+      cb? 'Failed to seek to ' + amount
+
+  socket.on 'getPlaylist', (uri, cb) ->
+    console.log 'getPlaylist', uri
+    models.Playlist.fromURI(uri).load('name', 'tracks', 'owner').then (playlist) ->
+      if not playlist.tracks.snapshot?
+        cb? null, playlist
+      else
+        console.log 'snapshotting...'
+        playlist.tracks.snapshot().then (tracks) ->
+          console.log 'snapshotted!', tracks, playlist
+          playlist.tracks = tracks.toArray()
+          cb? null, playlist
+        , (err) ->
+          console.error err
+          cb? 'Failed to retrieve playlist ' + uri
+    , (err) ->
+      console.error err
+      cb? 'Failed to retrieve playlist ' + uri
 
   currentStatus = null
   models.player.addEventListener 'change', (event) ->
