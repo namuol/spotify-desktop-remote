@@ -22,7 +22,7 @@
     socket = io.connect('http://localhost:3001');
     socket.on('connect', function() {
       var status;
-      socket.emit('__player_connected__');
+      socket.emit('__playerConnected__');
       status = document.getElementById('status');
       return status.className = status.innerHTML = 'connected';
     });

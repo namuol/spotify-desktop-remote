@@ -43,9 +43,13 @@
   spotify_socket = null;
 
   io.on('connection', function(socket) {
-    socket.on('__player_connected__', function() {
+    if (spotify_socket != null) {
+      spotify_socket.broadcast.emit('playerConnected');
+    }
+    socket.on('__playerConnected__', function() {
       spotify_socket = socket;
       spotify_socket.on('disconnect', function() {
+        spotify_socket.broadcast.emit('playerDisconnected');
         return spotify_socket = null;
       });
       return spotify_socket.on('player.change', function(data) {

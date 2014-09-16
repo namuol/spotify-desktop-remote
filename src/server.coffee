@@ -25,9 +25,11 @@ getParams = (req) ->
 spotify_socket = null
 
 io.on 'connection', (socket) ->
-  socket.on '__player_connected__', ->
+  spotify_socket?.broadcast.emit 'playerConnected'
+  socket.on '__playerConnected__', ->
     spotify_socket = socket
     spotify_socket.on 'disconnect', ->
+      spotify_socket.broadcast.emit 'playerDisconnected'
       spotify_socket = null
     spotify_socket.on 'player.change', (data) ->
       spotify_socket.broadcast.emit 'player.change', data

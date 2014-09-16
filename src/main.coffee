@@ -18,7 +18,7 @@ require ['$api/models'], (models) ->
   socket = io.connect 'http://localhost:3001'
 
   socket.on 'connect', ->
-    socket.emit '__player_connected__'
+    socket.emit '__playerConnected__'
     status = document.getElementById 'status'
     status.className = status.innerHTML = 'connected'
 
