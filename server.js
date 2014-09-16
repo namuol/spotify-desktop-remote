@@ -48,6 +48,7 @@
     }
     socket.on('__playerConnected__', function() {
       spotify_socket = socket;
+      spotify_socket.broadcast.emit('playerConnected');
       spotify_socket.on('disconnect', function() {
         spotify_socket.broadcast.emit('playerDisconnected');
         return spotify_socket = null;

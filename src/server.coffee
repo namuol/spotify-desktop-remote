@@ -28,6 +28,7 @@ io.on 'connection', (socket) ->
   spotify_socket?.broadcast.emit 'playerConnected'
   socket.on '__playerConnected__', ->
     spotify_socket = socket
+    spotify_socket.broadcast.emit 'playerConnected'
     spotify_socket.on 'disconnect', ->
       spotify_socket.broadcast.emit 'playerDisconnected'
       spotify_socket = null
