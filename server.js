@@ -47,9 +47,11 @@
       spotify_socket.broadcast.emit('playerConnected');
     }
     socket.on('__playerConnected__', function() {
+      console.log('Player connected!');
       spotify_socket = socket;
       spotify_socket.broadcast.emit('playerConnected');
       spotify_socket.on('disconnect', function() {
+        console.log('Player disconnected!');
         spotify_socket.broadcast.emit('playerDisconnected');
         return spotify_socket = null;
       });
