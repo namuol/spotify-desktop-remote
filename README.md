@@ -1,4 +1,16 @@
-**Update: Spotify no longer officially supports Desktop Apps, so this probably wont work for you.**
+# No Longer Supported
+
+Spotify no longer officially supports Desktop Apps, so this probably wont work for you.
+
+If you can think of an alternative way to control Spotify Desktop with a similar interface, please [let me know](https://github.com/namuol/spotify-desktop-remote/issues)!
+
+Some possible alternatives:
+
+- [nutgaard/SpotifyHttpJs](https://github.com/nutgaard/SpotifyHttpJs)
+- [cgbystrom/spotify-local-http-api](https://github.com/cgbystrom/spotify-local-http-api)
+  + [Great article about Spotify's built-in HTTP server](http://cgbystrom.com/articles/deconstructing-spotifys-builtin-http-server/)
+
+----
 
 # Spotify Desktop Remote
 
