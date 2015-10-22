@@ -1,3 +1,5 @@
+**Update: Spotify no longer officially supports Desktop Apps, so this probably wont work for you.**
+
 # Spotify Desktop Remote
 
 Control your Spotify Desktop app from a simple HTTP interface or with [Socket.IO](http://socket.io).
