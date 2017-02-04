@@ -6,6 +6,7 @@ If you can think of an alternative way to control Spotify Desktop with a similar
 
 Some possible alternatives:
 
+- [Spotify Web Helper](https://github.com/onetune/spotify-web-helper)
 - [nutgaard/SpotifyHttpJs](https://github.com/nutgaard/SpotifyHttpJs)
 - [cgbystrom/spotify-local-http-api](https://github.com/cgbystrom/spotify-local-http-api)
   + [Great article about Spotify's built-in HTTP server](http://cgbystrom.com/articles/deconstructing-spotifys-builtin-http-server/)
